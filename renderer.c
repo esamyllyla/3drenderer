@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include "rendererheader.h"
 #include "object.c"
@@ -42,13 +41,6 @@ uint32_t RGBToColor(uint32_t a, uint32_t r, uint32_t g, uint32_t b)
     uint32_t color = (a << 24 | b << 16 | g << 8 | r);
     return color;
 }
-
-void Swap(float *a, float *b)
-{
-    float t = *a;
-    *a = *b;
-    *b = t;
-};
 
 void ConvertY(float *Y)
 {
@@ -214,10 +206,7 @@ void InterpolatedTriangleWUV3d(uint32_t *Buffer, float *ZBuffer, vertex3d aSpace
     {
         MaxY = SCREEN_HEIGHT;
     }
-    
-    if(MinX > MaxX) Swap(&MinX, &MaxX);
-    if(MinY > MaxY) Swap(&MinY, &MaxY);
-    
+
     vertex2d ConvertedA = {x1, y1};
     vertex2d ConvertedB = {x2, y2};
     vertex2d ConvertedC = {x3, y3};
@@ -302,160 +291,6 @@ void InterpolatedTriangleWUV3d(uint32_t *Buffer, float *ZBuffer, vertex3d aSpace
     }
 }
 
-void InterpolatedTriangle(uint32_t *Buffer, vertex2d a, vertex2d b, vertex2d c,
-int height, int width)
-{
-    float x1 = a.x;
-    float x2 = b.x;
-    float x3 = c.x;
-    
-    float y1 = a.y;
-    float y2 = b.y;
-    float y3 = c.y;
-
-    float Ys[3] = {y1, y2, y3};
-    
-    sort(Ys, 3);
-    
-    float MinY = Ys[2];
-    float MaxY = Ys[0];
-    
-    float Xs[3] = {x1, x2, x3};
-    
-    sort(Xs, 3);
-    
-    float MinX = Xs[2];
-    float MaxX = Xs[0];
-
-    if(MinX < 0)
-    {
-        MinX = 0;
-    }
-    if(MinY < 0)
-    {
-        MinY = 0;
-    }
-    if(MaxX > width)
-    {
-        MaxX = width;
-    }
-    if(MaxY > height)
-    {
-        MaxY = height;
-    }
-
-    if(MinX > MaxX) Swap(&MinX, &MaxX);
-    if(MinY > MaxY) Swap(&MinY, &MaxY);
-    
-    vertex2d ConvertedA = {x1, y1};
-    vertex2d ConvertedB = {x2, y2};
-    vertex2d ConvertedC = {x3, y3};
-    
-    for(int Y = MinY; Y < MaxY; ++Y)
-    {
-        for(int X = MinX; X < MaxX; ++X)
-        {
-            float w1;
-            float w2;
-            float w3;
-            
-            getBaryCentricWeight(ConvertedA, ConvertedB, ConvertedC, &w1, &w2, &w3, X, Y);
-            
-            if((w1 > 0) && (w2 > 0) && (w3 > 0))
-            {
-				uint32_t r = (int)(w1 * 255.0f);
-				uint32_t g = (int)(w2 * 255.0f);
-				uint32_t b = (int)(w3 * 255.0f);
-				uint32_t a = 255;
-
-                uint32_t mappedColor = RGBToColor(a, r, g, b);
-				Buffer[Y*width + X] = mappedColor;
-            }
-        }
-    }
-}
-
-void barycentricZbuffer(float *ZBuffer, uint32_t *screenBuffer, vertex2d a, vertex2d b, 
-    vertex2d c, vertex3d spaceA, vertex3d spaceB, vertex3d spaceC)
-{
-
-    float x1 = a.x;
-    float x2 = b.x;
-    float x3 = c.x;
-    
-    float y1 = a.y;
-    float y2 = b.y;
-    float y3 = c.y;
-
-    float Ys[3] = {y1, y2, y3};
-    
-    sort(Ys, 3);
-    
-    float MinY = Ys[2];
-    float MaxY = Ys[0];
-    
-    float Xs[3] = {x1, x2, x3};
-    
-    sort(Xs, 3);
-    
-    float MinX = Xs[2];
-    float MaxX = Xs[0];
-
-    if(MinX < 0)
-    {
-        MinX = 0;
-    }
-    if(MinY < 0)
-    {
-        MinY = 0;
-    }
-    if(MaxX > SCREEN_WIDTH)
-    {
-        MaxX = SCREEN_WIDTH;
-    }
-    if(MaxY > SCREEN_HEIGHT)
-    {
-        MaxY = SCREEN_HEIGHT;
-    }
-
-    if(MinX > MaxX) Swap(&MinX, &MaxX);
-    if(MinY > MaxY) Swap(&MinY, &MaxY);
-    
-    vertex2d ConvertedA = {x1, y1};
-    vertex2d ConvertedB = {x2, y2};
-    vertex2d ConvertedC = {x3, y3};
-    
-    for(int Y = MinY; Y < MaxY; ++Y)
-    {
-        for(int X = MinX; X < MaxX; ++X)
-        {
-            float w1;
-            float w2;
-            float w3;
-            
-            getBaryCentricWeight(ConvertedA, ConvertedB, ConvertedC, &w1, &w2, &w3, X, Y);
-            
-            if((w1 > 0) && (w2 > 0) && (w3 > 0))
-            {
-                uint32_t r = (int)(w1 * 255.0f);
-				uint32_t g = (int)(w2 * 255.0f);
-				uint32_t b = (int)(w3 * 255.0f);
-				uint32_t a = 255;
-
-                float ZCoord = w1*(1.0f/spaceA.z) + w2*(1.0f/spaceB.z) + w3*(1.0f/spaceC.z);
-				float normalizedZ = Normalize(ZCoord, 0.5f, 2.0f, 0.0f, 1.0f);
-                ZBuffer[Y*SCREEN_WIDTH + X] = ZCoord;
-                r = (int)(normalizedZ * r);
-				g = (int)(normalizedZ * g);
-				b = (int)(normalizedZ * b);
-                
-				uint32_t mappedColor = RGBToColor(a, r, g, b);
-                screenBuffer[Y*SCREEN_WIDTH + X] = mappedColor;
-            }
-        }
-    }
-}
-
 void debugAnimatedBackground(window *Window, float offset)
 {
     for(int X = 0; X < Window->width; X++)
@@ -471,18 +306,6 @@ void debugAnimatedBackground(window *Window, float offset)
 			Window->pixels[Y*Window->width + X] = color;
 		}
 	}
-}
-
-void DrawRectangle(window *Window, vertex2d topleft, vertex2d bottomright, uint32_t r, uint32_t g, uint32_t b)
-{
-    for(int X = (int)topleft.x; X < (int)bottomright.x; X++)
-    {
-        for(int Y = (int)topleft.y; Y < (int)bottomright.y; Y++)
-        {
-            uint32_t color = RGBToColor(255, r, g, b);
-            Window->pixels[Y*Window->width + X] = color;
-        }
-    }
 }
 
 void drawSprite(uint32_t *Buffer, uint32_t *image, int width, int height, int startX, int startY)
@@ -663,4 +486,3 @@ uint32_t *render(float dt, int isMouseDown, int prevMouseDown, int mouseX, int m
     
     return WindowPixels.pixels;
 }
-

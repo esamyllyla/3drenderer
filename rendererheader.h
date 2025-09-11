@@ -69,7 +69,6 @@ typedef struct
 
 //Prototypes:
 void ReadObject();
-void Swap(float *a, float *b);
 void ConvertY(float *Y);
 float Normalize(float X, float Min, float Max, float targetMin, float targetMax);
 void sort(float arr[], int length);
@@ -84,13 +83,7 @@ void getBaryCentricWeight(vertex2d a, vertex2d b, vertex2d c,
     float *w1, float *w2, float *w3, float pixelX, float pixelY);
 void InterpolatedTriangleWUV3d(uint32_t *Buffer, float *ZBuffer, vertex3d aSpace, vertex3d bSpace,
     vertex3d cSpace, UV uv, SpriteData *spriteData, float dim, trianglesettings TriangleSettings);
-void RenderUVSprite(uint32_t *Buffer, vertex2d a, vertex2d b, vertex2d c, vertex2d d, 
-    SpriteData *spriteData);
-void InterpolatedTriangle(uint32_t *Buffer, vertex2d a, vertex2d b, vertex2d c,
-    int height, int width);
 void drawSprite(uint32_t *Buffer, uint32_t *image, int width, int height, int startX, int startY);
-void barycentricZbuffer(float *ZBuffer, uint32_t *screenBuffer, vertex2d a, vertex2d b, 
-    vertex2d c, vertex3d spaceA, vertex3d spaceB, vertex3d spaceC);
 void debugAnimatedBackground(window *Window, float dt);
 void paintScreen(uint32_t *Buffer, uint32_t color);
 void debugDrawDot(uint32_t *Buffer, int X, int Y, uint32_t color);
