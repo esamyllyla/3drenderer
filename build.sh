@@ -1,4 +1,4 @@
 #!/bin/bash
 
-clang -Wall -Wextra --target=wasm32 -o wasm.o -c wasm.c 
+clang -Wall -Wextra --target=wasm32 -o wasm.o -c renderer.c 
 wasm-ld -m wasm32 --no-entry --export-all --allow-undefined -o wasm.wasm wasm.o
