@@ -94,3 +94,4 @@ void barycentricZbuffer(float *ZBuffer, uint32_t *screenBuffer, vertex2d a, vert
 void debugAnimatedBackground(window *Window, float dt);
 void paintScreen(uint32_t *Buffer, uint32_t color);
 void debugDrawDot(uint32_t *Buffer, int X, int Y, uint32_t color);
+void MouseGrabbingByAxis(mouseAxisState *state, int isMouseDown, int prevMouseDown, int mouseAxis, float dt);
