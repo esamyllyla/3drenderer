@@ -4,19 +4,11 @@
 
 int init = 0;
 
-static uint32_t pixels[SCREEN_WIDTH*SCREEN_HEIGHT];
-static float ZBuffer0[SCREEN_WIDTH*SCREEN_HEIGHT];
-
-char objFileContent[256];
-
 static vertex3d objVertices[10000];
 static int objFaces[10000][3];
 static int objFaces[10000][3];
 static int VerticeAmount;
 static int FaceAmount;
-
-mouseAxisState mouseXstate = {0, 0, 0, 0};
-mouseAxisState mouseYstate = {0, 0, 0, 0};
 
 void ReadObject()
 {
@@ -379,6 +371,12 @@ uint32_t *render(float dt, int isMouseDown, int prevMouseDown, int mouseX, int m
     ReadObject();
     init = 1;
   }
+
+  static uint32_t pixels[SCREEN_WIDTH*SCREEN_HEIGHT];
+  static float ZBuffer0[SCREEN_WIDTH*SCREEN_HEIGHT];
+
+  static mouseAxisState mouseXstate = {0, 0, 0, 0};
+  static mouseAxisState mouseYstate = {0, 0, 0, 0};
   
     window WindowPixels;
     WindowPixels.pixels = pixels;
